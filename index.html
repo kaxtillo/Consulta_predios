@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Pecuaria por Vereda</title>
+    <!-- Tailwind CSS para diseño moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">Consulta de Población Pecuaria por Vereda</h1>
+        
+        <!-- Input de Búsqueda Rápida -->
+        <input type="text" id="searchInput" placeholder="Buscar por municipio o vereda..." 
+               class="w-full p-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-green-700 text-white">
+                        <th class="p-3">Amenaza</th>
+                        <th class="p-3">Municipio</th>
+                        <th class="p-3">Vereda</th>
+                        <th class="p-3">Predios</th>
+                        <th class="p-3">Total Animales</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-gray-200">
+                    <!-- Los datos se inyectarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let dataGlobal = [];
+
+        // Cargar el archivo JSON optimizado
+        fetch('resumen_por_vereda.json')
+            .then(response => response.json())
+            .then(data => {
+                dataGlobal = data;
+                renderTable(dataGlobal.slice(0, 50)); // Mostrar primeros 50 registros por rendimiento inicial
+            })
+            .catch(error => console.error('Error al cargar el archivo JSON:', error));
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No se encontraron resultados</td></tr>`;
+                return;
+            }
+
+            data.forEach(row => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-3 font-semibold">${row.RIEGO || ''}</td>
+                        <td class="p-3">${row.MUNICIPIO || ''}</td>
+                        <td class="p-3">${row.VEREDA || ''}</td>
+                        <td class="p-3">${row.Predios || 0}</td>
+                        <td class="p-3 font-bold text-green-700">${row.Total_Animales || 0}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Filtro dinámico en tiempo real
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = dataGlobal.filter(item => 
+                (item.MUNICIPIO && item.MUNICIPIO.toLowerCase().includes(query)) || 
+                (item.VEREDA && item.VEREDA.toLowerCase().includes(query))
+            );
+            renderTable(filtered.slice(0, 50)); // Limitar visualización para velocidad
+        });
+    </script>
+</body>
+</html>
