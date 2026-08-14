@@ -11,9 +11,23 @@
     <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 class="text-2xl font-bold mb-4 text-gray-800">Consulta de Población Pecuaria por Vereda</h1>
         
-        <!-- Input de Búsqueda Rápida -->
-        <input type="text" id="searchInput" placeholder="Buscar por municipio o vereda..." 
-               class="w-full p-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+        <!-- Filtros superiores -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <!-- Selector Desplegable de Municipios -->
+            <div>
+                <label for="municipioSelect" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Municipio:</label>
+                <select id="municipioSelect" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white">
+                    <option value="">-- Todos los municipios --</option>
+                </select>
+            </div>
+
+            <!-- Input de Búsqueda Rápida por Vereda o Texto -->
+            <div>
+                <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Buscar por Vereda:</label>
+                <input type="text" id="searchInput" placeholder="Escribe el nombre de la vereda..." 
+                       class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+        </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -41,9 +55,24 @@
             .then(response => response.json())
             .then(data => {
                 dataGlobal = data;
-                renderTable(dataGlobal.slice(0, 50)); 
+                poblarSelectMunicipios(dataGlobal);
+                renderTable(dataGlobal.slice(0, 50)); // Mostrar primeros 50 registros por rendimiento inicial
             })
             .catch(error => console.error('Error al cargar el archivo JSON:', error));
+
+        // Función para llenar el menú desplegable con municipios únicos ordenados alfabéticamente
+        centerSelect = document.getElementById('municipioSelect');
+        function poblarSelectMunicipios(data) {
+            const municipios = [...new Set(data.map(item => item.MUNICIPIO).filter(Boolean))].sort();
+            const select = document.getElementById('municipioSelect');
+            
+            municipios.forEach(municipio => {
+                const option = document.createElement('option');
+                option.value = municipio;
+                option.textContent = municipio;
+                select.appendChild(option);
+            });
+        }
 
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
@@ -67,15 +96,23 @@
             });
         }
 
-        // Filtro dinámico en tiempo real
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            const filtered = dataGlobal.filter(item => 
-                (item.MUNICIPIO && item.MUNICIPIO.toLowerCase().includes(query)) || 
-                (item.VEREDA && item.VEREDA.toLowerCase().includes(query))
-            );
-            renderTable(filtered.slice(0, 50)); // Limitar visualización para velocidad
-        });
+        // Función para filtrar datos combinando el selector y la barra de texto
+        function aplicarFiltros() {
+            const municipioSeleccionado = document.getElementById('municipioSelect').value.toLowerCase();
+            const queryVereda = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtrados = dataGlobal.filter(item => {
+                const coincideMunicipio = !municipioSeleccionado || (item.MUNICIPIO && item.MUNICIPIO.toLowerCase() === municipioSeleccionado);
+                const coincideVereda = !queryVereda || (item.VEREDA && item.VEREDA.toLowerCase().includes(queryVereda));
+                return coincideMunicipio && coincideVereda;
+            });
+
+            renderTable(filtrados.slice(0, 50));
+        }
+
+        // Eventos para actualizar la tabla dinámicamente al interactuar
+        document.getElementById('municipioSelect').addEventListener('change', aplicarFiltros);
+        document.getElementById('searchInput').addEventListener('input', aplicarFiltros);
     </script>
 </body>
 </html>
