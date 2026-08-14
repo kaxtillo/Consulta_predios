@@ -45,7 +45,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody" class="divide-y divide-gray-200">
-                    <!-- Los datos se inyectarán dinámicamente -->
+                    <tr><td colspan="9" class="p-4 text-center text-gray-500">Cargando datos...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -54,11 +54,11 @@
     <script>
         let dataGlobal = [];
 
-        // Cargar el archivo JSON usando la ruta directa de tu rama principal
-        fetch('https://raw.githubusercontent.com/kaxtillo/Consulta_predios/principal/resumen_por_vereda.json')
+        // Carga directa mediante ruta relativa (ambos archivos están en la raíz del repositorio)
+        fetch('resumen_por_vereda.json')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('No se pudo cargar el archivo JSON');
+                    throw new Error('No se pudo encontrar el archivo JSON en la ruta');
                 }
                 return response.json();
             })
@@ -67,7 +67,10 @@
                 poblarSelectMunicipios(dataGlobal);
                 renderTable(dataGlobal.slice(0, 50)); // Mostrar primeros 50 registros por rendimiento inicial
             })
-            .catch(error => console.error('Error al cargar el archivo JSON:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="p-4 text-center text-red-500">Error al cargar el archivo de datos.</td></tr>`;
+            });
 
         // Función para llenar el menú desplegable con municipios únicos ordenados alfabéticamente
         function poblarSelectMunicipios(data) {
