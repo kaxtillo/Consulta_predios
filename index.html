@@ -21,7 +21,7 @@
                 </select>
             </div>
 
-            <!-- Input de Búsqueda Rápida por Vereda o Texto -->
+            <!-- Input de Búsqueda Rápida por Vereda -->
             <div>
                 <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Buscar por Vereda:</label>
                 <input type="text" id="searchInput" placeholder="Escribe el nombre de la vereda..." 
@@ -52,7 +52,12 @@
 
         // Cargar el archivo JSON usando la ruta directa de tu rama principal
         fetch('https://raw.githubusercontent.com/kaxtillo/Consulta_predios/principal/resumen_por_vereda.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar el archivo JSON');
+                }
+                return response.json();
+            })
             .then(data => {
                 dataGlobal = data;
                 poblarSelectMunicipios(dataGlobal);
@@ -61,7 +66,6 @@
             .catch(error => console.error('Error al cargar el archivo JSON:', error));
 
         // Función para llenar el menú desplegable con municipios únicos ordenados alfabéticamente
-        centerSelect = document.getElementById('municipioSelect');
         function poblarSelectMunicipios(data) {
             const municipios = [...new Set(data.map(item => item.MUNICIPIO).filter(Boolean))].sort();
             const select = document.getElementById('municipioSelect');
