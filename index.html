@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-6">
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 class="text-2xl font-bold mb-4 text-gray-800">Consulta de Población Pecuaria por Vereda</h1>
         
         <!-- Filtros superiores -->
@@ -30,14 +30,18 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
                     <tr class="bg-green-700 text-white">
                         <th class="p-3">Amenaza</th>
                         <th class="p-3">Municipio</th>
                         <th class="p-3">Vereda</th>
-                        <th class="p-3">Predios</th>
-                        <th class="p-3">Total Animales</th>
+                        <th class="p-3 text-center">Predios</th>
+                        <th class="p-3 text-center">Bovinos</th>
+                        <th class="p-3 text-center">Equinos</th>
+                        <th class="p-3 text-center">Porcinos</th>
+                        <th class="p-3 text-center">Ovinos/Caprinos</th>
+                        <th class="p-3 text-center">Total Animales</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody" class="divide-y divide-gray-200">
@@ -83,7 +87,7 @@
             tbody.innerHTML = '';
             
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">No se encontraron resultados</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-500">No se encontraron resultados</td></tr>`;
                 return;
             }
 
@@ -93,8 +97,12 @@
                         <td class="p-3 font-semibold">${row.RIEGO || ''}</td>
                         <td class="p-3">${row.MUNICIPIO || ''}</td>
                         <td class="p-3">${row.VEREDA || ''}</td>
-                        <td class="p-3">${row.Predios || 0}</td>
-                        <td class="p-3 font-bold text-green-700">${row.Total_Animales || 0}</td>
+                        <td class="p-3 text-center">${row.Predios || 0}</td>
+                        <td class="p-3 text-center">${row.Bovinos || 0}</td>
+                        <td class="p-3 text-center">${row.Equinos || 0}</td>
+                        <td class="p-3 text-center">${row.Porcinos || 0}</td>
+                        <td class="p-3 text-center">${row.Ovinos_Caprinos || 0}</td>
+                        <td class="p-3 text-center font-bold text-green-700">${row.Total_Animales || 0}</td>
                     </tr>
                 `;
             });
