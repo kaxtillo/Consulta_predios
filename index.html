@@ -36,12 +36,12 @@
     <script>
         let dataGlobal = [];
 
-        // Cargar el archivo JSON optimizado
-        fetch('resumen_por_vereda.json')
+        // Cargar el archivo JSON usando la ruta directa de tu rama principal
+        fetch('https://raw.githubusercontent.com/kaxtillo/Consulta_predios/principal/resumen_por_vereda.json')
             .then(response => response.json())
             .then(data => {
                 dataGlobal = data;
-                renderTable(dataGlobal.slice(0, 50)); // Mostrar primeros 50 registros por rendimiento inicial
+                renderTable(dataGlobal.slice(0, 50)); 
             })
             .catch(error => console.error('Error al cargar el archivo JSON:', error));
 
